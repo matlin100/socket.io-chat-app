@@ -8,6 +8,28 @@ document.addEventListener('DOMContentLoaded', function() {
 
   const params = Qs.parse(location.search, { ignoreQueryPrefix: true });
 
+  const autoscroll = () => {
+    // New message element
+    const $newMessage = messages.lastElementChild
+
+    // Height of the new message
+    const newMessageStyles = getComputedStyle($newMessage)
+    const newMessageMargin = parseInt(newMessageStyles.marginBottom)
+    const newMessageHeight = $newMessage.offsetHeight + newMessageMargin
+
+    // Visible height
+    const visibleHeight = $messages.offsetHeight
+
+    // Height of messages container
+    const containerHeight = $messages.scrollHeight
+
+    // How far have I scrolled?
+    const scrollOffset = $messages.scrollTop + visibleHeight
+
+    if (containerHeight - newMessageHeight <= scrollOffset) {
+        $messages.scrollTop = $messages.scrollHeight
+    }
+}
 
   form.addEventListener('submit', function(e) {
     e.preventDefault();
@@ -39,7 +61,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const item = document.createElement('li');
     item.innerHTML = `<p>${msg.user}<small> > ${msg.timestamp}</small></p><strong>${msg.text}</strong>`;
     messages.appendChild(item);
-    window.scrollTo(0, document.body.scrollHeight);
   });
   socket.emit('join', params , (error) => {
     if (error) {
